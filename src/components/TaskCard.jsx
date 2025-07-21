@@ -53,48 +53,62 @@ const TaskCard = ({ task, onUpdate, onDelete, onToggleCompletion, isLoading = fa
     setIsEditing(true);
   };
 
+  // Keyboard event handlers for accessibility
+  const handleKeyDown = (event, action) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      action();
+    }
+  };
+
   const renderStatusIcon = () => {
     const iconProps = { className: "w-5 h-5" };
     
     switch (task.currentStatus) {
       case TASK_STATUS.SUCCESS:
-        return <CheckCircle {...iconProps} className="w-5 h-5 text-green-600 dark:text-green-400" />;
+        return <CheckCircle {...iconProps} className="w-5 h-5 text-green-600 dark:text-green-400" aria-hidden="true" />;
       case TASK_STATUS.FAILURE:
-        return <XCircle {...iconProps} className="w-5 h-5 text-red-600 dark:text-red-400" />;
+        return <XCircle {...iconProps} className="w-5 h-5 text-red-600 dark:text-red-400" aria-hidden="true" />;
       case TASK_STATUS.ONGOING:
-        return <Clock {...iconProps} className="w-5 h-5 text-blue-600 dark:text-blue-400" />;
+        return <Clock {...iconProps} className="w-5 h-5 text-blue-600 dark:text-blue-400" aria-hidden="true" />;
       default:
-        return <Clock {...iconProps} className="w-5 h-5 text-gray-600 dark:text-gray-400" />;
+        return <Clock {...iconProps} className="w-5 h-5 text-gray-600 dark:text-gray-400" aria-hidden="true" />;
     }
   };
 
   const renderUrgencyIcon = () => {
     if (urgencyLevel === 'overdue' || urgencyLevel === 'critical') {
-      return <AlertCircle className="w-4 h-4 text-red-500 dark:text-red-400" />;
+      return <AlertCircle className="w-4 h-4 text-red-500 dark:text-red-400" aria-hidden="true" />;
     }
     return null;
   };
 
   const renderActionButtons = () => (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2" role="group" aria-label="Task actions">
       <button
         onClick={handleEditClick}
-        className="p-1 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+        onKeyDown={(e) => handleKeyDown(e, handleEditClick)}
+        className="p-1 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
         title="Edit task"
         disabled={isLoading}
+        aria-label={`Edit task: ${task.title}`}
+        tabIndex={0}
       >
-        <Edit className="w-4 h-4" />
+        <Edit className="w-4 h-4" aria-hidden="true" />
       </button>
       <button
         onClick={handleDelete}
+        onKeyDown={(e) => handleKeyDown(e, handleDelete)}
         disabled={isDeleting || isLoading}
-        className="p-1 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors disabled:opacity-50"
+        className="p-1 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded"
         title="Delete task"
+        aria-label={`Delete task: ${task.title}`}
+        tabIndex={0}
       >
         {isDeleting ? (
-          <div className="w-4 h-4 border-2 border-red-600 dark:border-red-400 border-t-transparent rounded-full animate-spin" />
+          <div className="w-4 h-4 border-2 border-red-600 dark:border-red-400 border-t-transparent rounded-full animate-spin" aria-hidden="true" />
         ) : (
-          <Trash2 className="w-4 h-4" />
+          <Trash2 className="w-4 h-4" aria-hidden="true" />
         )}
       </button>
     </div>
@@ -103,7 +117,7 @@ const TaskCard = ({ task, onUpdate, onDelete, onToggleCompletion, isLoading = fa
   const renderCompletionToggle = () => {
     const isCompleted = task.isCompleted;
     const toggleClasses = [
-      "mt-1 flex-shrink-0 w-5 h-5 rounded border-2 transition-colors",
+      "mt-1 flex-shrink-0 w-5 h-5 rounded border-2 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2",
       isLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
     ];
 
@@ -116,10 +130,15 @@ const TaskCard = ({ task, onUpdate, onDelete, onToggleCompletion, isLoading = fa
     return (
       <button
         onClick={handleToggleCompletion}
+        onKeyDown={(e) => handleKeyDown(e, handleToggleCompletion)}
         disabled={isLoading}
         className={toggleClasses.join(" ")}
+        aria-label={`${isCompleted ? 'Mark as incomplete' : 'Mark as complete'}: ${task.title}`}
+        aria-checked={isCompleted}
+        role="checkbox"
+        tabIndex={0}
       >
-        {isCompleted && <CheckCircle className="w-4 h-4" />}
+        {isCompleted && <CheckCircle className="w-4 h-4" aria-hidden="true" />}
       </button>
     );
   };
@@ -154,8 +173,8 @@ const TaskCard = ({ task, onUpdate, onDelete, onToggleCompletion, isLoading = fa
     }
 
     return (
-      <div className="flex items-center gap-2 text-sm">
-        <Clock className="w-4 h-4 text-muted-foreground" />
+      <div className="flex items-center gap-2 text-sm" aria-label={`Task deadline: ${timeDisplay}`}>
+        <Clock className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
         <span className={timeClasses.join(" ")}>
           {timeDisplay}
         </span>
@@ -178,7 +197,7 @@ const TaskCard = ({ task, onUpdate, onDelete, onToggleCompletion, isLoading = fa
 
   if (isEditing) {
     return (
-      <div className="mb-4">
+      <div className="mb-4" role="region" aria-label="Edit task form">
         <TaskForm
           task={task}
           onSubmit={handleUpdate}
@@ -188,15 +207,21 @@ const TaskCard = ({ task, onUpdate, onDelete, onToggleCompletion, isLoading = fa
       </div>
     );
   }
+
   return (
-    <div className={`card mb-4 border-l-4 ${urgencyColor} animate-slide-up hover:shadow-md transition-shadow task-card ${
-      task.isCompleted ? 'task-card-completed' : ''
-    }`}>
+    <div 
+      className={`card mb-4 border-l-4 ${urgencyColor} animate-slide-up hover:shadow-md transition-shadow task-card ${
+        task.isCompleted ? 'task-card-completed' : ''
+      }`}
+      role="article"
+      aria-label={`Task: ${task.title}. Status: ${task.currentStatus}. ${timeDisplay}`}
+      tabIndex={0}
+    >
       <div className="flex items-start justify-between">
         <div className="flex-1">
           {/* Header with status and actions */}
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2" role="group" aria-label="Task status">
               {renderStatusIcon()}
               <span className={`badge ${statusBadgeColor}`}>
                 {task.currentStatus.charAt(0).toUpperCase() + task.currentStatus.slice(1)}

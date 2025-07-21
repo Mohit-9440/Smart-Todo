@@ -53,21 +53,23 @@ const SearchComponent = ({ tasks, onSearchChange, isLoading }) => {
       {/* Search Bar */}
       <div className="relative">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" aria-hidden="true" />
           <input
             type="text"
             placeholder="Search tasks by title or description..."
             value={searchTerm}
             onChange={handleSearchChange}
             className="search-input w-full pl-12 pr-12 py-2 text- shadow-lg rounded-xl border-2 focus:border-blue-500 transition-all duration-200"
+            aria-label="Search tasks"
           />
           {searchTerm && (
             <button
               type="button"
               onClick={clearSearch}
               className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="Clear search"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5" aria-hidden="true" />
             </button>
           )}
         </div>
@@ -88,7 +90,7 @@ const SearchComponent = ({ tasks, onSearchChange, isLoading }) => {
       {/* No Results Message */}
       {searchTerm && stats && stats.found === 0 && (
         <div className="text-center py-8">
-          <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" aria-hidden="true" />
           <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-2">
             No tasks found
           </h3>
@@ -99,6 +101,7 @@ const SearchComponent = ({ tasks, onSearchChange, isLoading }) => {
             onClick={clearSearch}
             variant="outline"
             className="theme-toggle"
+            aria-label="Clear search"
           >
             Clear Search
           </Button>
