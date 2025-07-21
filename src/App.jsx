@@ -1,25 +1,25 @@
-import { useState, useEffect } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "react-hot-toast";
-import TaskModal from "./components/TaskModal";
-import TaskBucket from "./components/TaskBucket";
-import SearchComponent from "./components/Search";
-import ThemeToggle from "./components/ThemeToggle";
-import { ThemeProvider } from "./contexts/ThemeContext";
+import { useState, useEffect } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'react-hot-toast';
+import TaskModal from './components/TaskModal';
+import TaskBucket from './components/TaskBucket';
+import SearchComponent from './components/Search';
+import ThemeToggle from './components/ThemeToggle';
+import { ThemeProvider } from './contexts/ThemeContext';
 import {
   useTasks,
   useCreateTask,
   useUpdateTask,
   useDeleteTask,
   useToggleTaskCompletion,
-} from "./hooks/useTasks";
-import { TASK_STATUS } from "./utils/taskUtils";
+} from './hooks/useTasks';
+import { TASK_STATUS } from './utils/taskUtils';
 import {
   showTaskCreatedToast,
   showTaskUpdatedToast,
   showTaskToggleToast,
   showTaskErrorToast,
-} from "./utils/toastUtils.jsx";
+} from './utils/toastUtils.jsx';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,30 +33,29 @@ const queryClient = new QueryClient({
 const TodoApp = () => {
   const [searchedTasks, setSearchedTasks] = useState([]);
 
-  const { tasks, isLoading, error } = useTasks();
+  const { tasks, isLoading } = useTasks();
   const createTask = useCreateTask();
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
   const toggleCompletion = useToggleTaskCompletion();
   useEffect(() => {
     if (!isLoading && tasks.length > 0) {
-      setSearchedTasks((prev) =>
+      setSearchedTasks(prev =>
         JSON.stringify(prev) !== JSON.stringify(tasks) ? tasks : prev
       );
     }
   }, [tasks, isLoading]);
 
-  const handleSearchChange = (newSearchedTasks) => {
+  const handleSearchChange = newSearchedTasks => {
     setSearchedTasks(newSearchedTasks);
   };
 
-  const handleCreateTask = async (taskData) => {
+  const handleCreateTask = async taskData => {
     try {
       await createTask.mutateAsync(taskData);
       showTaskCreatedToast();
-    } catch (error) {
-      console.error("Failed to create task:", error);
-      showTaskErrorToast("create");
+    } catch {
+      showTaskErrorToast('create');
     }
   };
 
@@ -64,53 +63,49 @@ const TodoApp = () => {
     try {
       await updateTask.mutateAsync({ id, taskData });
       showTaskUpdatedToast();
-    } catch (error) {
-      console.error("Failed to update task:", error);
-      showTaskErrorToast("update");
+    } catch {
+      showTaskErrorToast('update');
     }
   };
 
-  const handleDeleteTask = async (id) => {
+  const handleDeleteTask = async id => {
     try {
       await deleteTask.mutateAsync(id);
-    } catch (error) {
-      console.error("Failed to delete task:", error);
-      showTaskErrorToast("delete");
+    } catch {
+      showTaskErrorToast('delete');
     }
   };
 
-  const handleToggleCompletion = async (task) => {
+  const handleToggleCompletion = async task => {
     try {
       await toggleCompletion.toggleCompletion(task);
-      const action = task.isCompleted ? "unmarked" : "marked as complete";
       showTaskToggleToast(!task.isCompleted);
-    } catch (error) {
-      console.error("Failed to toggle task completion:", error);
-      showTaskErrorToast("update");
+    } catch {
+      showTaskErrorToast('update');
     }
   };
 
   // Render main application
   return (
-    <div className="min-h-screen relative">
+    <div className='min-h-screen relative'>
       {/* Animated Background */}
-      <div className="custom-animated-background">
-        <div className="orb-1"></div>
-        <div className="orb-2"></div>
-        <div className="orb-3"></div>
-        <div className="pattern"></div>
-        <div className="particle particle-1"></div>
-        <div className="particle particle-2"></div>
-        <div className="particle particle-3"></div>
-        <div className="particle particle-4"></div>
-        <div className="bottom-gradient">
+      <div className='custom-animated-background'>
+        <div className='orb-1'></div>
+        <div className='orb-2'></div>
+        <div className='orb-3'></div>
+        <div className='pattern'></div>
+        <div className='particle particle-1'></div>
+        <div className='particle particle-2'></div>
+        <div className='particle particle-3'></div>
+        <div className='particle particle-4'></div>
+        <div className='bottom-gradient'>
           <div></div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10">
-        <div className="container mx-auto px-4 py-8">
+      <div className='relative z-10'>
+        <div className='container mx-auto px-4 py-8'>
           <AppHeader />
 
           <SearchAndCreateSection
@@ -137,14 +132,14 @@ const TodoApp = () => {
 
 // Header component with dark mode
 const AppHeader = () => (
-  <div className="text-center mb-8 relative">
-    <div className="absolute top-0 right-0">
+  <div className='text-center mb-8 relative'>
+    <div className='absolute top-0 right-0'>
       <ThemeToggle />
     </div>
-    <h1 className="text-3xl font-bold text-foreground mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+    <h1 className='text-3xl font-bold text-foreground mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent'>
       Smart Todo App
     </h1>
-    <p className="text-base text-muted-foreground">
+    <p className='text-base text-muted-foreground'>
       Organize your tasks efficiently
     </p>
   </div>
@@ -157,8 +152,8 @@ const SearchAndCreateSection = ({
   onCreateTask,
   isCreateLoading,
 }) => (
-  <div className="mb-8 flex flex-col lg:flex-row gap-4 items-start">
-    <div className="flex-1">
+  <div className='mb-8 flex flex-col lg:flex-row gap-4 items-start'>
+    <div className='flex-1'>
       <SearchComponent
         tasks={tasks}
         onSearchChange={onSearchChange}
@@ -181,9 +176,9 @@ const TaskManagementSection = ({
 }) => (
   <div>
     {/* Task Buckets */}
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
       <TaskBucket
-        title="Active Tasks"
+        title='Active Tasks'
         status={TASK_STATUS.ONGOING}
         tasks={tasks}
         onUpdate={onUpdateTask}
@@ -193,7 +188,7 @@ const TaskManagementSection = ({
       />
 
       <TaskBucket
-        title="Completed Tasks"
+        title='Completed Tasks'
         status={TASK_STATUS.SUCCESS}
         tasks={tasks}
         onUpdate={onUpdateTask}
@@ -203,7 +198,7 @@ const TaskManagementSection = ({
       />
 
       <TaskBucket
-        title="Overdue Tasks"
+        title='Overdue Tasks'
         status={TASK_STATUS.FAILURE}
         tasks={tasks}
         onUpdate={onUpdateTask}
@@ -221,13 +216,13 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <TodoApp />
         <Toaster
-          position="top-right"
+          position='top-right'
           toastOptions={{
             duration: 3000,
             style: {
-              background: "hsl(var(--card))",
-              color: "hsl(var(--card-foreground))",
-              border: "1px solid hsl(var(--border))",
+              background: 'hsl(var(--card))',
+              color: 'hsl(var(--card-foreground))',
+              border: '1px solid hsl(var(--border))',
             },
           }}
         />

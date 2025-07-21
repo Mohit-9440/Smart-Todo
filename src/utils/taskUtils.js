@@ -1,14 +1,14 @@
-import { formatDistanceToNow, isAfter, isBefore, parseISO } from 'date-fns';
+import { formatDistanceToNow, isBefore, parseISO } from 'date-fns';
 
 // Task status categories as per assignment requirements
 export const TASK_STATUS = {
   ONGOING: 'ongoing',
-  SUCCESS: 'success', 
-  FAILURE: 'failure'
+  SUCCESS: 'success',
+  FAILURE: 'failure',
 };
 
 // Map database column names to API contract names
-export const mapTaskFromDatabase = (task) => {
+export const mapTaskFromDatabase = task => {
   return {
     id: task.id,
     title: task.title,
@@ -21,7 +21,7 @@ export const mapTaskFromDatabase = (task) => {
 };
 
 // Map API contract names to database column names
-export const mapTaskToDatabase = (task) => {
+export const mapTaskToDatabase = task => {
   return {
     id: task.id,
     title: task.title,
@@ -34,51 +34,51 @@ export const mapTaskToDatabase = (task) => {
 };
 
 // Determine task status based on completion and deadline
-export const getTaskStatus = (task) => {
+export const getTaskStatus = task => {
   const now = new Date();
   const deadline = parseISO(task.deadline);
-  
+
   if (task.isCompleted) {
     return TASK_STATUS.SUCCESS;
   }
-  
+
   if (isBefore(deadline, now)) {
     return TASK_STATUS.FAILURE;
   }
-  
+
   return TASK_STATUS.ONGOING;
 };
 
 // Get time display for task (countdown or overdue)
-export const getTimeDisplay = (task) => {
+export const getTimeDisplay = task => {
   const now = new Date();
   const deadline = parseISO(task.deadline);
-  
+
   if (task.isCompleted) {
     return 'Completed';
   }
-  
+
   if (isBefore(deadline, now)) {
     return `Overdue by ${formatDistanceToNow(deadline)}`;
   }
-  
+
   return `Due in ${formatDistanceToNow(deadline)}`;
 };
 
 // Get urgency level for styling
-export const getUrgencyLevel = (task) => {
+export const getUrgencyLevel = task => {
   const now = new Date();
   const deadline = parseISO(task.deadline);
-  
+
   if (task.isCompleted) return 'completed';
-  
+
   const hoursUntilDeadline = (deadline - now) / (1000 * 60 * 60);
-  
+
   if (isBefore(deadline, now)) return 'overdue';
   if (hoursUntilDeadline <= 1) return 'critical';
   if (hoursUntilDeadline <= 24) return 'urgent';
   if (hoursUntilDeadline <= 72) return 'warning';
-  
+
   return 'normal';
 };
 
@@ -88,7 +88,7 @@ export const filterTasksByStatus = (tasks, status) => {
 };
 
 // Sort tasks by deadline (earliest first)
-export const sortTasksByDeadline = (tasks) => {
+export const sortTasksByDeadline = tasks => {
   return [...tasks].sort((a, b) => {
     const deadlineA = parseISO(a.deadline);
     const deadlineB = parseISO(b.deadline);
@@ -97,7 +97,7 @@ export const sortTasksByDeadline = (tasks) => {
 };
 
 // Get status badge color
-export const getStatusBadgeColor = (status) => {
+export const getStatusBadgeColor = status => {
   switch (status) {
     case TASK_STATUS.ONGOING:
       return 'badge-ongoing';
@@ -111,7 +111,7 @@ export const getStatusBadgeColor = (status) => {
 };
 
 // Get urgency color for task cards
-export const getUrgencyColor = (urgencyLevel) => {
+export const getUrgencyColor = urgencyLevel => {
   switch (urgencyLevel) {
     case 'overdue':
       return 'border-l-danger-500';
@@ -126,4 +126,4 @@ export const getUrgencyColor = (urgencyLevel) => {
     default:
       return 'border-l-primary-500';
   }
-}; 
+};

@@ -1,9 +1,9 @@
 // fallback to mock data if supabase is not used
 // Generate UUID for task IDs
 const generateUUID = () => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 };
@@ -49,7 +49,7 @@ const mockTasks = [
 ];
 
 // Simulate API delay
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 class TaskAPI {
   constructor() {
@@ -94,13 +94,13 @@ class TaskAPI {
     if (taskIndex === -1) {
       throw new Error('Task not found');
     }
-    
+
     this.tasks[taskIndex] = {
       ...this.tasks[taskIndex],
       ...taskData,
       updatedAt: new Date().toISOString(),
     };
-    
+
     this.saveTasks(); // Save to localStorage
     return { data: this.tasks[taskIndex] };
   }
@@ -112,7 +112,7 @@ class TaskAPI {
     if (taskIndex === -1) {
       throw new Error('Task not found');
     }
-    
+
     const deletedTask = this.tasks[taskIndex];
     this.tasks.splice(taskIndex, 1);
     this.saveTasks(); // Save to localStorage
@@ -122,4 +122,4 @@ class TaskAPI {
 
 const api = new TaskAPI();
 
-export default api; 
+export default api;

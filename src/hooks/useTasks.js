@@ -7,21 +7,21 @@ import { getTaskStatus, TASK_STATUS } from '../utils/taskUtils';
 export const taskKeys = {
   all: ['tasks'],
   lists: () => [...taskKeys.all, 'list'],
-  list: (filters) => [...taskKeys.lists(), { filters }],
+  list: filters => [...taskKeys.lists(), { filters }],
   details: () => [...taskKeys.all, 'detail'],
-  detail: (id) => [...taskKeys.details(), id],
+  detail: id => [...taskKeys.details(), id],
 };
 
 // Custom hook for tasks with real-time status updates
 export const useTasks = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
-  
+
   // Update current time every minute for real-time status changes
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000); // Update every minute
-    
+
     return () => clearInterval(interval);
   }, []);
 
@@ -36,10 +36,11 @@ export const useTasks = () => {
   });
 
   // Process tasks with current time for accurate status
-  const processedTasks = query.data?.map(task => ({
-    ...task,
-    currentStatus: getTaskStatus(task),
-  })) || [];
+  const processedTasks =
+    query.data?.map(task => ({
+      ...task,
+      currentStatus: getTaskStatus(task),
+    })) || [];
 
   return {
     ...query,
@@ -51,17 +52,17 @@ export const useTasks = () => {
 // Hook for creating tasks
 export const useCreateTask = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async (taskData) => {
+    mutationFn: async taskData => {
       const response = await api.createTask(taskData);
       return response.data;
     },
-    onSuccess: (newTask) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
     },
-    onError: (error) => {
-      console.error('Failed to create task:', error);
+    onError: () => {
+      // Handle error silently or show toast
     },
   });
 };
@@ -69,17 +70,17 @@ export const useCreateTask = () => {
 // Hook for updating tasks
 export const useUpdateTask = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({ id, taskData }) => {
       const response = await api.updateTask(id, taskData);
       return response.data;
     },
-    onSuccess: (updatedTask) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
     },
-    onError: (error) => {
-      console.error('Failed to update task:', error);
+    onError: () => {
+      // Handle error silently or show toast
     },
   });
 };
@@ -87,33 +88,38 @@ export const useUpdateTask = () => {
 // Hook for deleting tasks
 export const useDeleteTask = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async (id) => {
+    mutationFn: async id => {
       const response = await api.deleteTask(id);
       return response.data;
     },
-    onSuccess: (deletedTask) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
     },
-    onError: (error) => {
-      console.error('Failed to delete task:', error);
+    onError: () => {
+      // Handle error silently or show toast
     },
   });
 };
 
 // Hook for toggling task completion
 export const useToggleTaskCompletion = () => {
-  const updateTask = useUpdateTask();
-  
+  const queryClient = useQueryClient();
+
   return {
-    toggleCompletion: (task) => {
-      return updateTask.mutate({
-        id: task.id,
-        taskData: { isCompleted: !task.isCompleted }
-      });
+    toggleCompletion: async task => {
+      const updatedTask = {
+        ...task,
+        isCompleted: !task.isCompleted,
+      };
+
+      try {
+        await api.updateTask(task.id, { isCompleted: updatedTask.isCompleted });
+        queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
+      } catch {
+        // Handle error silently or show toast
+      }
     },
-    isLoading: updateTask.isPending,
-    error: updateTask.error,
   };
-}; 
+};
