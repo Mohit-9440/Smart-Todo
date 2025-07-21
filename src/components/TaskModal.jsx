@@ -1,162 +1,104 @@
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Calendar, Clock, Plus } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from './ui/dialog';
+import { Plus } from 'lucide-react';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Textarea } from './ui/textarea';
 
-// Form validation schema
-const taskSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(100, 'Title must be less than 100 characters'),
-  description: z.string().max(500, 'Description must be less than 500 characters').optional(),
-  deadline: z.string().min(1, 'Deadline is required'),
-});
-
-const TaskModal = ({ onSubmit, isLoading = false }) => {
-  const [open, setOpen] = useState(false);
-  
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isValid },
-    reset,
-    watch,
-  } = useForm({
-    resolver: zodResolver(taskSchema),
-    defaultValues: {
-      title: '',
-      description: '',
-      deadline: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16), // Default to tomorrow
-    },
-    mode: 'onChange',
+const TaskModal = ({ onSubmit, isLoading }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    deadline: ''
   });
 
-  const watchedDeadline = watch('deadline');
-  const deadlineDate = watchedDeadline ? new Date(watchedDeadline) : null;
-  const isPastDeadline = deadlineDate && deadlineDate < new Date();
-
-  const handleFormSubmit = async (data) => {
-    try {
-      await onSubmit(data);
-      reset();
-      setOpen(false);
-    } catch (error) {
-      console.error('Form submission error:', error);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (formData.title.trim() && formData.deadline) {
+      onSubmit({
+        ...formData,
+        createdAt: new Date().toISOString(),
+        isCompleted: false
+      });
+      setFormData({ title: '', description: '', deadline: '' });
+      setIsOpen(false);
     }
   };
 
-  const handleCancel = () => {
-    reset();
-    setOpen(false);
+  const handleChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
   };
 
+  if (!isOpen) {
+    return (
+      <Button 
+        onClick={() => setIsOpen(true)} 
+        className="add-task-btn flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-200"
+      >
+        <Plus className="w-4 h-4" />
+        Add New Task
+      </Button>
+    );
+  }
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="flex items-center gap-2 border border-border">
-          <Plus className="w-4 h-4" />
-          Add New Task
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Create New Task</DialogTitle>
-          <DialogDescription>
-            Add a new task with title, description, and deadline.
-          </DialogDescription>
-        </DialogHeader>
-        
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-          {/* Title Field */}
-          <div className="space-y-2">
-            <Label htmlFor="title">Title *</Label>
-            <Input
-              {...register('title')}
+    <div className="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white/95 dark:bg-gray-800/95 p-6 rounded-xl shadow-2xl w-full max-w-md backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+        <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">Add New Task</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Title *</label>
+            <input
               type="text"
-              id="title"
-              placeholder="Enter task title"
-              className={errors.title ? 'border-red-500 focus:ring-red-500 dark:border-red-400 dark:focus:ring-red-400' : ''}
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              className="search-input w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              required
             />
-            {errors.title && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.title.message}</p>
-            )}
           </div>
-
-          {/* Description Field */}
-          <div className="space-y-2">
-            <Label htmlFor="description">Description (Optional)</Label>
-            <Textarea
-              {...register('description')}
-              id="description"
-              placeholder="Enter task description"
-              className={errors.description ? 'border-red-500 focus:ring-red-500 dark:border-red-400 dark:focus:ring-red-400' : ''}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Description</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="search-input w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              rows="3"
             />
-            {errors.description && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.description.message}</p>
-            )}
           </div>
-
-          {/* Deadline Field */}
-          <div className="space-y-2">
-            <Label htmlFor="deadline">Deadline *</Label>
-            <div className="relative">
-              <Input
-                {...register('deadline')}
-                type="datetime-local"
-                id="deadline"
-                className={`pr-10 ${errors.deadline || isPastDeadline ? 'border-red-500 focus:ring-red-500 dark:border-red-400 dark:focus:ring-red-400' : ''}`}
-              />
-              <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            </div>
-            {errors.deadline && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.deadline.message}</p>
-            )}
-            {isPastDeadline && !errors.deadline && (
-              <p className="text-sm text-yellow-600 dark:text-yellow-400">
-                ⚠️ This deadline is in the past
-              </p>
-            )}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Deadline *</label>
+            <input
+              type="datetime-local"
+              name="deadline"
+              value={formData.deadline}
+              onChange={handleChange}
+              className="search-input w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              required
+            />
           </div>
-
-          {/* Form Actions */}
-          <DialogFooter>
+          <div className="flex gap-2 justify-end pt-4">
             <Button
               type="button"
               variant="outline"
-              onClick={handleCancel}
-              disabled={isLoading}
+              onClick={() => setIsOpen(false)}
+              className="theme-toggle"
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={!isValid || isLoading}
+            <Button 
+              type="submit" 
+              disabled={isLoading}
+              className="add-task-btn"
             >
-              {isLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Creating...
-                </div>
-              ) : (
-                'Create Task'
-              )}
+              {isLoading ? 'Adding...' : 'Add Task'}
             </Button>
-          </DialogFooter>
+          </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 };
 

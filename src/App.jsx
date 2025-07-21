@@ -1,44 +1,62 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from 'react-hot-toast';
-import TaskModal from './components/TaskModal';
-import TaskBucket from './components/TaskBucket';
-import ThemeToggle from './components/ThemeToggle';
-import { ThemeProvider } from './contexts/ThemeContext';
-import { useTasks, useCreateTask, useUpdateTask, useDeleteTask, useToggleTaskCompletion } from './hooks/useTasks';
-import { TASK_STATUS } from './utils/taskUtils';
-import { 
-  showTaskCreatedToast, 
-  showTaskUpdatedToast, 
-  showTaskToggleToast, 
-  showTaskErrorToast 
-} from './utils/toastUtils.jsx';
+import { useState, useEffect } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "react-hot-toast";
+import TaskModal from "./components/TaskModal";
+import TaskBucket from "./components/TaskBucket";
+import SearchComponent from "./components/Search";
+import ThemeToggle from "./components/ThemeToggle";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import {
+  useTasks,
+  useCreateTask,
+  useUpdateTask,
+  useDeleteTask,
+  useToggleTaskCompletion,
+} from "./hooks/useTasks";
+import { TASK_STATUS } from "./utils/taskUtils";
+import {
+  showTaskCreatedToast,
+  showTaskUpdatedToast,
+  showTaskToggleToast,
+  showTaskErrorToast,
+} from "./utils/toastUtils.jsx";
 
-// Initialize query client with default options
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 30000, // 30 seconds
+      staleTime: 30000,
       retry: 1,
     },
   },
 });
 
 const TodoApp = () => {
-  // Custom hooks for data management
+  const [searchedTasks, setSearchedTasks] = useState([]);
+
   const { tasks, isLoading, error } = useTasks();
   const createTask = useCreateTask();
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
   const toggleCompletion = useToggleTaskCompletion();
+  useEffect(() => {
+    if (!isLoading && tasks.length > 0) {
+      setSearchedTasks((prev) =>
+        JSON.stringify(prev) !== JSON.stringify(tasks) ? tasks : prev
+      );
+    }
+  }, [tasks, isLoading]);
 
-  // Event handlers for task operations
+  const handleSearchChange = (newSearchedTasks) => {
+    setSearchedTasks(newSearchedTasks);
+  };
+
   const handleCreateTask = async (taskData) => {
     try {
       await createTask.mutateAsync(taskData);
       showTaskCreatedToast();
     } catch (error) {
-      console.error('Failed to create task:', error);
-      showTaskErrorToast('create');
+      console.error("Failed to create task:", error);
+      showTaskErrorToast("create");
     }
   };
 
@@ -47,139 +65,156 @@ const TodoApp = () => {
       await updateTask.mutateAsync({ id, taskData });
       showTaskUpdatedToast();
     } catch (error) {
-      console.error('Failed to update task:', error);
-      showTaskErrorToast('update');
+      console.error("Failed to update task:", error);
+      showTaskErrorToast("update");
     }
   };
 
   const handleDeleteTask = async (id) => {
     try {
       await deleteTask.mutateAsync(id);
-      // Toast notification is handled in TaskCard component
     } catch (error) {
-      console.error('Failed to delete task:', error);
-      showTaskErrorToast('delete');
+      console.error("Failed to delete task:", error);
+      showTaskErrorToast("delete");
     }
   };
 
   const handleToggleCompletion = async (task) => {
     try {
-      await toggleCompletion.toggleCompletion(task);
-      const action = task.isCompleted ? 'unmarked' : 'marked as complete';
+      await toggleCompletion.mutateAsync(task);
+      const action = task.isCompleted ? "unmarked" : "marked as complete";
       showTaskToggleToast(!task.isCompleted);
     } catch (error) {
-      console.error('Failed to toggle task completion:', error);
-      showTaskErrorToast('update');
+      console.error("Failed to toggle task completion:", error);
+      showTaskErrorToast("update");
     }
   };
 
-  // Render error state
-  if (error) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto px-4">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Tasks</h1>
-          <p className="text-foreground mb-4">{error.message}</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   // Render main application
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        {/* Application Header */}
-        <AppHeader />
-        
-        {/* Task Creation Section */}
-        <TaskCreationSection 
-          onCreateTask={handleCreateTask}
-          isLoading={createTask.isPending}
-        />
+    <div className="min-h-screen relative">
+      {/* Animated Background */}
+      <div className="custom-animated-background">
+        <div className="orb-1"></div>
+        <div className="orb-2"></div>
+        <div className="orb-3"></div>
+        <div className="pattern"></div>
+        <div className="particle particle-1"></div>
+        <div className="particle particle-2"></div>
+        <div className="particle particle-3"></div>
+        <div className="particle particle-4"></div>
+        <div className="bottom-gradient">
+          <div></div>
+        </div>
+      </div>
 
-        {/* Task Management Section */}
-        <TaskManagementSection 
-          tasks={tasks}
-          isLoading={isLoading}
-          onUpdateTask={handleUpdateTask}
-          onDeleteTask={handleDeleteTask}
-          onToggleCompletion={handleToggleCompletion}
-        />
+      {/* Main Content */}
+      <div className="relative z-10">
+        <div className="container mx-auto px-4 py-8">
+          <AppHeader />
+
+          <SearchAndCreateSection
+            tasks={tasks}
+            onSearchChange={handleSearchChange}
+            isLoading={isLoading}
+            onCreateTask={handleCreateTask}
+            isCreateLoading={createTask.isPending}
+          />
+
+          {/* Task Management Section */}
+          <TaskManagementSection
+            tasks={searchedTasks}
+            isLoading={isLoading}
+            onUpdateTask={handleUpdateTask}
+            onDeleteTask={handleDeleteTask}
+            onToggleCompletion={handleToggleCompletion}
+          />
+        </div>
       </div>
     </div>
   );
 };
 
-// Header component with theme toggle
+// Header component with dark mode
 const AppHeader = () => (
-  <div className="text-center mb-4 relative">
+  <div className="text-center mb-8 relative">
     <div className="absolute top-0 right-0">
       <ThemeToggle />
     </div>
-    <h1 className="text-4xl font-bold text-foreground mb-2">Smart Todo App</h1>
-    <p className="text-muted-foreground">Organize your tasks efficiently</p>
+    <h1 className="text-3xl font-bold text-foreground mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+      Smart Todo App
+    </h1>
+    <p className="text-base text-muted-foreground">
+      Organize your tasks efficiently
+    </p>
   </div>
 );
 
-// Task creation section
-const TaskCreationSection = ({ onCreateTask, isLoading }) => (
-  <div className="mb-8 flex justify-end">
-    <TaskModal
-      onSubmit={onCreateTask}
-      isLoading={isLoading}
-    />
+const SearchAndCreateSection = ({
+  tasks,
+  onSearchChange,
+  isLoading,
+  onCreateTask,
+  isCreateLoading,
+}) => (
+  <div className="mb-8 flex flex-col lg:flex-row gap-4 items-start">
+    <div className="flex-1">
+      <SearchComponent
+        tasks={tasks}
+        onSearchChange={onSearchChange}
+        isLoading={isLoading}
+      />
+    </div>
+    <div>
+      <TaskModal onSubmit={onCreateTask} isLoading={isCreateLoading} />
+    </div>
   </div>
 );
 
 // Task management section with buckets
-const TaskManagementSection = ({ 
-  tasks, 
-  isLoading, 
-  onUpdateTask, 
-  onDeleteTask, 
-  onToggleCompletion 
+const TaskManagementSection = ({
+  tasks,
+  isLoading,
+  onUpdateTask,
+  onDeleteTask,
+  onToggleCompletion,
 }) => (
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <TaskBucket
-      title="Active Tasks"
-      status={TASK_STATUS.ONGOING}
-      tasks={tasks}
-      onUpdate={onUpdateTask}
-      onDelete={onDeleteTask}
-      onToggleCompletion={onToggleCompletion}
-      isLoading={isLoading}
-    />
-    
-    <TaskBucket
-      title="Completed Tasks"
-      status={TASK_STATUS.SUCCESS}
-      tasks={tasks}
-      onUpdate={onUpdateTask}
-      onDelete={onDeleteTask}
-      onToggleCompletion={onToggleCompletion}
-      isLoading={isLoading}
-    />
-    
-    <TaskBucket
-      title="Overdue Tasks"
-      status={TASK_STATUS.FAILURE}
-      tasks={tasks}
-      onUpdate={onUpdateTask}
-      onDelete={onDeleteTask}
-      onToggleCompletion={onToggleCompletion}
-      isLoading={isLoading}
-    />
+  <div>
+    {/* Task Buckets */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <TaskBucket
+        title="Active Tasks"
+        status={TASK_STATUS.ONGOING}
+        tasks={tasks}
+        onUpdate={onUpdateTask}
+        onDelete={onDeleteTask}
+        onToggleCompletion={onToggleCompletion}
+        isLoading={isLoading}
+      />
+
+      <TaskBucket
+        title="Completed Tasks"
+        status={TASK_STATUS.SUCCESS}
+        tasks={tasks}
+        onUpdate={onUpdateTask}
+        onDelete={onDeleteTask}
+        onToggleCompletion={onToggleCompletion}
+        isLoading={isLoading}
+      />
+
+      <TaskBucket
+        title="Overdue Tasks"
+        status={TASK_STATUS.FAILURE}
+        tasks={tasks}
+        onUpdate={onUpdateTask}
+        onDelete={onDeleteTask}
+        onToggleCompletion={onToggleCompletion}
+        isLoading={isLoading}
+      />
+    </div>
   </div>
 );
 
-// Main App component with providers
 const App = () => {
   return (
     <ThemeProvider>
@@ -190,9 +225,9 @@ const App = () => {
           toastOptions={{
             duration: 3000,
             style: {
-              background: 'hsl(var(--card))',
-              color: 'hsl(var(--card-foreground))',
-              border: '1px solid hsl(var(--border))',
+              background: "hsl(var(--card))",
+              color: "hsl(var(--card-foreground))",
+              border: "1px solid hsl(var(--border))",
             },
           }}
         />

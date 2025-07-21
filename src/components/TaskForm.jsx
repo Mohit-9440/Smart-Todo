@@ -59,7 +59,7 @@ const TaskForm = ({ task = null, onSubmit, onCancel, isLoading = false }) => {
   return (
     <div className="card animate-fade-in">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-base font-semibold text-gray-900">
           {task ? 'Edit Task' : 'Create New Task'}
         </h3>
         <button

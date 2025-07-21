@@ -78,7 +78,7 @@ const TaskBucket = ({
       {/* Bucket Header */}
       <div className="flex items-center gap-2 mb-4">
         {renderBucketIcon()}
-        <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+        <h2 className="text-base font-semibold text-foreground">{title}</h2>
         <span className="badge bg-background text-foreground border border-border">
           {sortedTasks.length}
         </span>
