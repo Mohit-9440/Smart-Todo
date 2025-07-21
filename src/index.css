@@ -53,12 +53,14 @@
   }
 
   body {
-    @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    transition: color 0.3s ease, background-color 0.3s ease;
   }
 
   /* Smooth transitions for theme changes */
   * {
-    @apply transition-colors duration-200;
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
   }
 }
 
@@ -68,11 +70,27 @@
   }
 
   .btn-primary {
-    @apply btn bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
+    @apply btn;
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+  .btn-primary:hover {
+    background-color: hsl(var(--primary) / 0.9);
+  }
+  .btn-primary:focus {
+    --tw-ring-color: hsl(var(--primary));
   }
 
   .btn-secondary {
-    @apply btn bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600;
+    @apply btn;
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+  }
+  .btn-secondary:hover {
+    background-color: hsl(var(--secondary) / 0.8);
+  }
+  .btn-secondary:focus {
+    --tw-ring-color: hsl(var(--secondary));
   }
 
   .btn-success {
@@ -84,11 +102,23 @@
   }
 
   .card {
-    @apply bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6;
+    @apply rounded-lg shadow-sm border p-6;
+    background-color: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+    border-color: hsl(var(--border));
   }
 
   .input {
-    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-500 dark:placeholder:text-gray-400;
+    @apply w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    border: 1px solid hsl(var(--input));
+  }
+  .input:focus {
+    --tw-ring-color: hsl(var(--ring));
+  }
+  .input::placeholder {
+    color: hsl(var(--muted-foreground));
   }
 
   .badge {
