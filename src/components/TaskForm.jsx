@@ -42,7 +42,12 @@ const TaskForm = ({ task = null, onSubmit, onCancel, isLoading = false }) => {
 
   const handleFormSubmit = async (data) => {
     try {
-      await onSubmit(data);
+      const formattedData = {
+        title: data.title,
+        description: data.description || '',
+        deadline: new Date(data.deadline).toISOString(),
+      };
+      await onSubmit(formattedData);
       if (!task) {
         reset();
       }

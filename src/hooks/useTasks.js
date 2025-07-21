@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
-import api from '../services/api';
+import api from '../services/apiFactory';
 import { getTaskStatus, TASK_STATUS } from '../utils/taskUtils';
 
 // Query keys
@@ -58,10 +58,7 @@ export const useCreateTask = () => {
       return response.data;
     },
     onSuccess: (newTask) => {
-      // Optimistically update the cache
-      queryClient.setQueryData(taskKeys.lists(), (oldTasks) => {
-        return oldTasks ? [...oldTasks, { ...newTask, currentStatus: getTaskStatus(newTask) }] : [newTask];
-      });
+      queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
     },
     onError: (error) => {
       console.error('Failed to create task:', error);
@@ -79,16 +76,7 @@ export const useUpdateTask = () => {
       return response.data;
     },
     onSuccess: (updatedTask) => {
-      // Optimistically update the cache
-      queryClient.setQueryData(taskKeys.lists(), (oldTasks) => {
-        if (!oldTasks) return [updatedTask];
-        
-        return oldTasks.map(task => 
-          task.id === updatedTask.id 
-            ? { ...updatedTask, currentStatus: getTaskStatus(updatedTask) }
-            : task
-        );
-      });
+      queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
     },
     onError: (error) => {
       console.error('Failed to update task:', error);
@@ -106,11 +94,7 @@ export const useDeleteTask = () => {
       return response.data;
     },
     onSuccess: (deletedTask) => {
-      // Optimistically update the cache
-      queryClient.setQueryData(taskKeys.lists(), (oldTasks) => {
-        if (!oldTasks) return [];
-        return oldTasks.filter(task => task.id !== deletedTask.id);
-      });
+      queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
     },
     onError: (error) => {
       console.error('Failed to delete task:', error);

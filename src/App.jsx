@@ -81,7 +81,7 @@ const TodoApp = () => {
 
   const handleToggleCompletion = async (task) => {
     try {
-      await toggleCompletion.mutateAsync(task);
+      await toggleCompletion.toggleCompletion(task);
       const action = task.isCompleted ? "unmarked" : "marked as complete";
       showTaskToggleToast(!task.isCompleted);
     } catch (error) {

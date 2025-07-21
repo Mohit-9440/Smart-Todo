@@ -7,6 +7,32 @@ export const TASK_STATUS = {
   FAILURE: 'failure'
 };
 
+// Map database column names to API contract names
+export const mapTaskFromDatabase = (task) => {
+  return {
+    id: task.id,
+    title: task.title,
+    description: task.description,
+    deadline: new Date(task.deadline).toISOString(), // Convert to proper ISO format
+    isCompleted: task.is_completed,
+    createdAt: new Date(task.created_at).toISOString(), // Convert to proper ISO format
+    updatedAt: new Date(task.updated_at).toISOString(), // Convert to proper ISO format
+  };
+};
+
+// Map API contract names to database column names
+export const mapTaskToDatabase = (task) => {
+  return {
+    id: task.id,
+    title: task.title,
+    description: task.description,
+    deadline: task.deadline,
+    is_completed: task.isCompleted,
+    created_at: task.createdAt,
+    updated_at: task.updatedAt,
+  };
+};
+
 // Determine task status based on completion and deadline
 export const getTaskStatus = (task) => {
   const now = new Date();

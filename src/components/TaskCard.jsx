@@ -21,7 +21,12 @@ const TaskCard = ({ task, onUpdate, onDelete, onToggleCompletion, isLoading = fa
   };
 
   const handleUpdate = async (updatedData) => {
-    await onUpdate({ id: task.id, taskData: updatedData });
+    const formattedData = {
+      title: updatedData.title,
+      description: updatedData.description || '',
+      deadline: new Date(updatedData.deadline).toISOString(),
+    };
+    await onUpdate({ id: task.id, taskData: formattedData });
     setIsEditing(false);
   };
 
@@ -40,7 +45,6 @@ const TaskCard = ({ task, onUpdate, onDelete, onToggleCompletion, isLoading = fa
         }
       },
       () => {
-        // User cancelled deletion - no action needed
       }
     );
   };
@@ -49,7 +53,6 @@ const TaskCard = ({ task, onUpdate, onDelete, onToggleCompletion, isLoading = fa
     setIsEditing(true);
   };
 
-  // Render status icon based on task status
   const renderStatusIcon = () => {
     const iconProps = { className: "w-5 h-5" };
     
@@ -65,7 +68,6 @@ const TaskCard = ({ task, onUpdate, onDelete, onToggleCompletion, isLoading = fa
     }
   };
 
-  // Render urgency icon if needed
   const renderUrgencyIcon = () => {
     if (urgencyLevel === 'overdue' || urgencyLevel === 'critical') {
       return <AlertCircle className="w-4 h-4 text-red-500 dark:text-red-400" />;
@@ -73,7 +75,6 @@ const TaskCard = ({ task, onUpdate, onDelete, onToggleCompletion, isLoading = fa
     return null;
   };
 
-  // Render action buttons
   const renderActionButtons = () => (
     <div className="flex items-center gap-2">
       <button
@@ -99,7 +100,6 @@ const TaskCard = ({ task, onUpdate, onDelete, onToggleCompletion, isLoading = fa
     </div>
   );
 
-  // Render completion toggle
   const renderCompletionToggle = () => {
     const isCompleted = task.isCompleted;
     const toggleClasses = [
@@ -124,7 +124,6 @@ const TaskCard = ({ task, onUpdate, onDelete, onToggleCompletion, isLoading = fa
     );
   };
 
-  // Render task content
   const renderTaskContent = () => (
     <div className="flex-1">
       <h3 className={`font-medium text-foreground mb-1 ${
@@ -143,7 +142,6 @@ const TaskCard = ({ task, onUpdate, onDelete, onToggleCompletion, isLoading = fa
     </div>
   );
 
-  // Render time display
   const renderTimeDisplay = () => {
     const timeClasses = ["font-medium"];
     
@@ -165,7 +163,6 @@ const TaskCard = ({ task, onUpdate, onDelete, onToggleCompletion, isLoading = fa
     );
   };
 
-  // Render metadata
   const renderMetadata = () => (
     <div className="mt-3 pt-3 border-t border-border">
       <p className="text-xs text-muted-foreground">
@@ -179,7 +176,6 @@ const TaskCard = ({ task, onUpdate, onDelete, onToggleCompletion, isLoading = fa
     </div>
   );
 
-  // Show edit form if editing
   if (isEditing) {
     return (
       <div className="mb-4">
@@ -192,8 +188,6 @@ const TaskCard = ({ task, onUpdate, onDelete, onToggleCompletion, isLoading = fa
       </div>
     );
   }
-
-  // Main card render
   return (
     <div className={`card mb-4 border-l-4 ${urgencyColor} animate-slide-up hover:shadow-md transition-shadow task-card ${
       task.isCompleted ? 'task-card-completed' : ''
