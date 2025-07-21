@@ -1,181 +1,191 @@
 # Smart Todo App
 
-A modern, feature-rich todo application built with React, featuring a clean architecture, professional UI, and comprehensive task management capabilities.
+A modern, feature-rich todo application built with React that demonstrates professional frontend development practices with real-world backend integration.
 
-## 🚀 Features
+## 🎯 Project Overview
 
-### Core Functionality
-- **Task Management**: Create, edit, delete, and toggle task completion
-- **Smart Categorization**: Tasks are automatically organized into Active, Completed, and Overdue buckets
-- **Real-time Status Updates**: Tasks automatically move between buckets based on deadlines
-- **Deadline Tracking**: Visual indicators for task urgency and overdue status
+This Smart Todo App showcases advanced frontend development skills with a focus on:
+- **Clean Architecture**: Modular component design with separation of concerns
+- **Real-world Backend Integration**: Support for both Mock API and Supabase (PostgreSQL)
+- **Professional UI/UX**: Modern design with responsive layout and accessibility
+- **Production-ready Features**: Error handling, performance optimization, and data persistence
 
-### User Experience
-- **Light/Dark Mode**: Toggle between themes with smooth transitions
-- **Responsive Design**: Optimized for desktop and mobile devices
-- **Toast Notifications**: User-friendly feedback for all actions
-- **Modal Interface**: Clean task creation with form validation
-- **Professional UI**: Modern design with consistent styling
+## 🛠️ Technical Choices
 
-### Technical Features
-- **State Management**: React Query for efficient data fetching and caching
-- **Form Validation**: Zod schema validation with real-time feedback
-- **Error Handling**: Comprehensive error states and user feedback
-- **Performance**: Optimized rendering and smooth animations
+### Frontend Stack
+- **React 19** - Latest React with modern hooks and features
+- **Vite** - Fast build tool for optimal development experience
+- **Tailwind CSS** - Utility-first CSS for rapid UI development
+- **TanStack Query** - Powerful data fetching and caching
+- **React Hook Form + Zod** - Type-safe form validation
+- **Lucide React** - Beautiful, customizable icons
 
-## 🛠️ Technology Stack
+### Backend Options
+- **Mock API** - Local storage-based API for development/demos
+- **Supabase** - Real PostgreSQL database with real-time capabilities
+- **API Factory Pattern** - Smart switching between backends
 
-- **Frontend**: React 19, Vite
-- **Styling**: Tailwind CSS with custom design system
-- **State Management**: TanStack Query (React Query)
-- **Forms**: React Hook Form with Zod validation
-- **UI Components**: Custom components with shadcn/ui patterns
-- **Icons**: Lucide React
-- **Notifications**: React Hot Toast
+### Key Technical Decisions
+- **Component Architecture**: Reusable UI components with shadcn/ui patterns
+- **State Management**: React Query for server state, Context for theme
+- **Form Validation**: Zod schemas for runtime type safety
+- **Error Handling**: Comprehensive error boundaries and user feedback
+- **Performance**: Optimized rendering with React Query caching
 
-## 📁 Project Structure
-
-```
-src/
-├── components/
-│   ├── ui/                 # Reusable UI components
-│   ├── TaskCard.jsx        # Individual task display
-│   ├── TaskBucket.jsx      # Task category containers
-│   ├── TaskModal.jsx       # Task creation modal
-│   ├── TaskForm.jsx        # Task editing form
-│   └── ThemeToggle.jsx     # Theme switcher
-├── contexts/
-│   └── ThemeContext.jsx    # Theme state management
-├── hooks/
-│   └── useTasks.js         # Custom hooks for task operations
-├── services/
-│   └── api.js              # Mock API service
-├── utils/
-│   ├── taskUtils.js        # Task utility functions
-│   ├── toastUtils.jsx      # Toast notification utilities
-│   └── cn.js              # Class name utility
-└── App.jsx                 # Main application component
-```
-
-## 🎨 Design System
-
-### Color Palette
-- **Primary**: Blue tones for active elements
-- **Success**: Green for completed tasks
-- **Warning**: Yellow for urgent tasks
-- **Error**: Red for overdue tasks and errors
-- **Neutral**: Gray scale for backgrounds and text
-
-### Typography
-- **Font**: Inter (system fallback)
-- **Hierarchy**: Clear heading and text sizing
-- **Accessibility**: Proper contrast ratios
-
-### Components
-- **Cards**: Consistent styling with hover effects
-- **Buttons**: Multiple variants (primary, secondary, outline)
-- **Forms**: Validated inputs with error states
-- **Modals**: Clean overlay dialogs
-
-## 🔧 Development
+## 🚀 Setup Instructions
 
 ### Prerequisites
 - Node.js 18+ 
 - npm or yarn
 
-### Installation
+### Quick Start
 ```bash
+# Clone the repository
+git clone https://github.com/Mohit-9440/Smart-Todo.git
+cd Smart
+
+# Install dependencies
 npm install
+
+# Start development server
+npm run dev
 ```
 
-### Development Server
+The app will run on `http://localhost:5173` (or next available port).
+
+### Backend Configuration
+
+#### Option A: Mock API (Default)
+No setup required! The app uses localStorage for data persistence.
+
+#### Option B: Supabase (Recommended)
+1. Create a Supabase project at [supabase.com](https://supabase.com)
+2. Create a `.env` file in the project root:
+```env
+VITE_USE_SUPABASE=true
+VITE_SUPABASE_URL=your_project_url
+VITE_SUPABASE_ANON_KEY=your_anon_key
+```
+3. Run the SQL setup from [SUPABASE_SETUP.md](./SUPABASE_SETUP.md)
+
+## 🎨 Innovative Features
+
+### 1. Smart Task Categorization
+Tasks are automatically organized into three intelligent buckets:
+- **Active Tasks**: Ongoing tasks with future deadlines
+- **Completed Tasks**: Successfully finished tasks
+- **Overdue Tasks**: Missed deadlines with visual urgency indicators
+
+### 2. Real-time Status Updates
+- Tasks automatically move between buckets based on deadlines
+- Visual urgency indicators (color-coded borders)
+- Countdown timers for approaching deadlines
+- Overdue warnings with prominent styling
+
+### 3. Dual Backend Architecture
+- **Seamless switching** between Mock API and Supabase
+- **Environment-based configuration** - no code changes needed
+- **Production-ready** with real database integration
+- **Fallback support** for development and testing
+
+### 4. Professional UX Patterns
+- **Toast notifications** for all user actions
+- **Confirmation dialogs** for destructive operations
+- **Loading states** with skeleton animations
+- **Error boundaries** with graceful fallbacks
+- **Theme persistence** across sessions
+
+### 5. Performance Optimizations
+- **React Query caching** for efficient data fetching
+- **Optimistic updates** for immediate UI feedback
+- **Code splitting** for faster initial loads
+- **Memoization** for expensive calculations
+
+## 📁 Project Structure
+
+```
+src/
+├── components/          # UI components
+│   ├── ui/             # Reusable UI primitives
+│   ├── TaskCard.jsx    # Individual task display
+│   ├── TaskBucket.jsx  # Task categorization
+│   └── TaskModal.jsx   # Task creation/editing
+├── hooks/              # Custom React hooks
+│   └── useTasks.js     # Data fetching logic
+├── services/           # API layer
+│   ├── api.js          # Mock API
+│   ├── supabaseApi.js  # Supabase integration
+│   └── apiFactory.js   # Backend switching
+├── utils/              # Utility functions
+└── contexts/           # Global state
+```
+
+## 🔌 API Contract
+
+The app follows a strict API contract supporting both backends:
+
+```json
+{
+  "id": "uuid",
+  "title": "string", 
+  "description": "string",
+  "deadline": "ISO timestamp",
+  "isCompleted": "boolean",
+  "createdAt": "timestamp",
+  "updatedAt": "timestamp"
+}
+```
+
+**Endpoints**: `GET /tasks`, `POST /tasks`, `PUT /tasks/:id`, `DELETE /tasks/:id`
+
+## 🎯 Key Features
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| Task CRUD | ✅ Complete | Full create, read, update, delete |
+| Smart Categorization | ✅ Complete | Automatic task organization |
+| Real-time Updates | ✅ Complete | Live status changes |
+| Dual Backend | ✅ Complete | Mock API + Supabase |
+| Responsive Design | ✅ Complete | Mobile + desktop |
+| Theme Switching | ✅ Complete | Light/dark mode |
+| Form Validation | ✅ Complete | Zod schema validation |
+| Error Handling | ✅ Complete | Comprehensive error states |
+
+## 🚀 Running the Project
+
+### Development
 ```bash
 npm run dev
 ```
 
-### Build for Production
+### Production Build
 ```bash
 npm run build
+npm run preview
+```
+
+### Testing
+```bash
+npm run test
 ```
 
 ## 📱 Usage
 
-### Creating Tasks
-1. Click "Add New Task" button (top-right)
-2. Fill in title, description, and deadline
-3. Submit to create the task
+1. **Create Tasks**: Click "Add New Task" → Fill form → Submit
+2. **Edit Tasks**: Click edit icon → Modify details → Save
+3. **Complete Tasks**: Click checkbox to toggle completion
+4. **Delete Tasks**: Click trash icon → Confirm deletion
+5. **Switch Themes**: Click sun/moon icon in header
 
-### Managing Tasks
-- **Edit**: Click the edit icon on any task
-- **Delete**: Click the trash icon (with confirmation)
-- **Complete**: Click the checkbox to toggle completion
-- **View Status**: Tasks are automatically categorized
+Tasks automatically organize into Active, Completed, and Overdue buckets based on deadlines and completion status.
 
-### Theme Switching
-- Click the sun/moon icon in the header
-- Theme preference is saved automatically
+## 🏆 Why This Project Stands Out
 
-## 🏗️ Architecture
+- **Real-world Integration**: Actual database with Supabase
+- **Professional Architecture**: Clean, scalable code structure
+- **Production-ready**: Error handling, performance, accessibility
+- **Modern Stack**: Latest React, Vite, and development tools
+- **Dual Backend**: Flexibility for different deployment scenarios
+- **Smart UX**: Intelligent task categorization and real-time updates
 
-### Component Design
-- **Separation of Concerns**: Each component has a single responsibility
-- **Reusability**: UI components are modular and reusable
-- **Props Interface**: Clear prop definitions and validation
-
-### State Management
-- **React Query**: Handles server state and caching
-- **Context API**: Manages theme state globally
-- **Local State**: Component-specific state with useState
-
-### Data Flow
-1. **API Layer**: Mock service with realistic delays
-2. **Hooks Layer**: Custom hooks for data operations
-3. **Component Layer**: UI components with event handlers
-4. **User Interface**: Clean, responsive design
-
-## 🧪 Code Quality
-
-### Best Practices
-- **Type Safety**: PropTypes and Zod validation
-- **Error Boundaries**: Comprehensive error handling
-- **Performance**: Optimized re-renders and lazy loading
-- **Accessibility**: ARIA labels and keyboard navigation
-
-### Code Organization
-- **Modular Structure**: Clear separation of concerns
-- **Consistent Naming**: Descriptive variable and function names
-- **Documentation**: Inline comments for complex logic
-- **Testing Ready**: Components designed for testability
-
-## 🚀 Performance Optimizations
-
-- **React Query**: Efficient caching and background updates
-- **Memoization**: Strategic use of React.memo and useMemo
-- **Lazy Loading**: Code splitting for better initial load
-- **Optimistic Updates**: Immediate UI feedback for better UX
-
-## 📊 Features Overview
-
-| Feature | Status | Description |
-|---------|--------|-------------|
-| Task CRUD | ✅ Complete | Full create, read, update, delete operations |
-| Smart Categorization | ✅ Complete | Automatic task organization |
-| Theme Switching | ✅ Complete | Light/dark mode with persistence |
-| Form Validation | ✅ Complete | Real-time validation with Zod |
-| Toast Notifications | ✅ Complete | User feedback for all actions |
-| Responsive Design | ✅ Complete | Mobile and desktop optimized |
-| Error Handling | ✅ Complete | Comprehensive error states |
-| Performance | ✅ Complete | Optimized rendering and caching |
-
-## 🎯 Future Enhancements
-
-- **Backend Integration**: Real API endpoints
-- **User Authentication**: Login and user management
-- **Task Categories**: Custom task categories
-- **Search & Filter**: Advanced task filtering
-- **Data Export**: Export tasks to various formats
-- **Offline Support**: Service worker for offline functionality
-
-## 📄 License
-
-This project is created for demonstration purposes as a frontend assignment.
+This project demonstrates advanced frontend development skills with practical, real-world implementation patterns.
